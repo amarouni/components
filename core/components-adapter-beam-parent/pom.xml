@@ -44,7 +44,7 @@
             <dependency>
                 <groupId>com.google.auto.value</groupId>
                 <artifactId>auto-value</artifactId>
-                <version>1.4.1</version>
+                <version>1.5.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.auto.service</groupId>
@@ -81,7 +81,7 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.beam</groupId>
-                <artifactId>beam-runners-flink_2.10</artifactId>
+                <artifactId>beam-runners-flink_2.11</artifactId>
                 <version>${beam.version}</version>
             </dependency>
             <dependency>
