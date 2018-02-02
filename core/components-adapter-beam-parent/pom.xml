@@ -15,7 +15,7 @@
     <name>Component API - Beam Parent POM</name>
 
     <properties>
-        <beam.version>2.0.0</beam.version>
+        <beam.version>2.3.0-SNAPSHOT</beam.version>
     </properties>
 
     <!-- Necessary if you want to compile with a SNAPSHOT of beam. -->
