@@ -31,6 +31,7 @@ import org.apache.beam.sdk.transforms.Values;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.joda.time.Duration;
 import org.talend.components.adapter.beam.transform.ConvertToIndexedRecord;
 import org.talend.components.api.component.runtime.RuntimableRuntime;
@@ -50,7 +51,9 @@ public class KafkaInputPTransformRuntime extends PTransform<PBegin, PCollection<
                 .<byte[], byte[]> read()
                 .withBootstrapServers(properties.getDatasetProperties().getDatastoreProperties().brokers.getValue())
                 .withTopics(Arrays.asList(new String[] { properties.getDatasetProperties().topic.getValue() }))
-                .updateConsumerProperties(KafkaConnection.createInputMaps(properties));
+                .updateConsumerProperties(KafkaConnection.createInputMaps(properties))
+                .withKeyDeserializer(ByteArrayDeserializer.class)
+                .withValueDeserializer(ByteArrayDeserializer.class);
 
         if (properties.useMaxReadTime.getValue()) {
             kafkaRead = kafkaRead.withMaxReadTime(new Duration(properties.maxReadTime.getValue()));
@@ -59,7 +62,8 @@ public class KafkaInputPTransformRuntime extends PTransform<PBegin, PCollection<
             kafkaRead = kafkaRead.withMaxNumRecords(properties.maxNumRecords.getValue());
         }
         // only consider value of kafkaRecord no matter which format selected
-        PCollection<byte[]> kafkaRecords = pBegin.apply(kafkaRead) //
+        PCollection<byte[]> kafkaRecords = pBegin
+                .apply(kafkaRead) //
                 .apply(ParDo.of(new ExtractRecord())) //
                 .apply(Values.<byte[]> create());
         switch (properties.getDatasetProperties().valueFormat.getValue()) {
@@ -79,10 +83,11 @@ public class KafkaInputPTransformRuntime extends PTransform<PBegin, PCollection<
             // than use the defined schema
             return kafkaRecords
                     .apply(ParDo.of(new ExtractCsvSplit(properties.getDatasetProperties().fieldDelimiter.getValue())))
-                    .apply(ConvertToIndexedRecord.<String[]>of());
+                    .apply(ConvertToIndexedRecord.<String[]> of());
         }
         default:
-            throw new RuntimeException("To be implemented: " + properties.getDatasetProperties().valueFormat.getValue());
+            throw new RuntimeException(
+                    "To be implemented: " + properties.getDatasetProperties().valueFormat.getValue());
         }
 
     }
