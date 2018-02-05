@@ -1,4 +1,16 @@
-package org.talend.components.google.drive.runtime.client;
+// ============================================================================
+//
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+package org.talend.components.google.drive.runtime.data;
 
 import static org.junit.Assert.*;
 
@@ -19,10 +31,6 @@ import org.talend.components.google.drive.data.GoogleDriveDatasetProperties.List
 import org.talend.components.google.drive.data.GoogleDriveDatastoreProperties;
 import org.talend.components.google.drive.data.GoogleDriveInputProperties;
 import org.talend.components.google.drive.runtime.GoogleDriveUtils;
-import org.talend.components.google.drive.runtime.data.GoogleDriveDataSource;
-import org.talend.components.google.drive.runtime.data.GoogleDriveDatasetRuntime;
-import org.talend.components.google.drive.runtime.data.GoogleDriveDatastoreRuntime;
-import org.talend.components.google.drive.runtime.data.GoogleDriveInputReader;
 import org.talend.daikon.properties.ValidationResult;
 
 public class GoogleDriveDatasetTestIT {
@@ -43,6 +51,7 @@ public class GoogleDriveDatasetTestIT {
 
     @Before
     public void setUp() throws Exception {
+        // System.setProperty("org.talend.components.google.drive.service_account_file", "");
         datastore = new GoogleDriveDatastoreProperties("test");
         datastore.setupProperties();
         datastore.setupLayout();
@@ -78,6 +87,10 @@ public class GoogleDriveDatasetTestIT {
             @Override
             public void accept(String s) {
                 try {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                    }
                     utils.deleteResourceById(s, false);
                 } catch (IOException e) {
                     LOG.error("Error during folder id {} removing : {}.", s, e);
