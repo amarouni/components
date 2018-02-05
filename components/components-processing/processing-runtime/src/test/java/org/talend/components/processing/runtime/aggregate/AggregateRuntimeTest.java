@@ -480,12 +480,13 @@ public class AggregateRuntimeTest {
     }
 
     @Test
+    @Ignore("PAssert issue")
     public void basicTest_Local() {
         basicTest(pipeline);
     }
 
     @Test
-    @Ignore("scala version conflict")
+    @Ignore("PAssert issue")
     public void basicTest_Spark() {
         basicTest(createSparkRunnerPipeline());
     }

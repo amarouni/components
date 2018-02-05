@@ -151,7 +151,9 @@ public class AggregateCombineFn
                         this.accumulatorFn = next.accumulatorFn;
                         continue;
                     }
-                    accs.add(next.accumulatorFn.getAccumulators());
+                    if (next.accumulatorFn != null) { // the next.addInput never be invoked
+                        accs.add(next.accumulatorFn.getAccumulators());
+                    }
                 }
                 this.accumulatorFn.mergeAccumulators(accs);
             }
