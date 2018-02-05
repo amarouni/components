@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.components.google.drive.runtime.data;
+package org.talend.components.google.drive.runtime;
 
 import static org.junit.Assert.*;
 
@@ -30,10 +30,13 @@ import org.talend.components.google.drive.data.GoogleDriveDatasetProperties;
 import org.talend.components.google.drive.data.GoogleDriveDatasetProperties.ListMode;
 import org.talend.components.google.drive.data.GoogleDriveDatastoreProperties;
 import org.talend.components.google.drive.data.GoogleDriveInputProperties;
-import org.talend.components.google.drive.runtime.GoogleDriveUtils;
+import org.talend.components.google.drive.runtime.data.GoogleDriveDataSource;
+import org.talend.components.google.drive.runtime.data.GoogleDriveDatasetRuntime;
+import org.talend.components.google.drive.runtime.data.GoogleDriveDatastoreRuntime;
+import org.talend.components.google.drive.runtime.data.GoogleDriveInputReader;
 import org.talend.daikon.properties.ValidationResult;
 
-public class GoogleDriveDatasetTestIT {
+public class GoogleDriveDatasetTestIT extends GoogleDriveBaseTestIT {
 
     public static final int LIMIT = 5;
 
@@ -51,19 +54,18 @@ public class GoogleDriveDatasetTestIT {
 
     @Before
     public void setUp() throws Exception {
-        // System.setProperty("org.talend.components.google.drive.service_account_file", "");
-        datastore = new GoogleDriveDatastoreProperties("test");
+        datastore = new GoogleDriveDatastoreProperties(TEST_NAME);
         datastore.setupProperties();
         datastore.setupLayout();
-        dataset = new GoogleDriveDatasetProperties("test");
+        dataset = new GoogleDriveDatasetProperties(TEST_NAME);
         dataset.setupProperties();
         dataset.setupLayout();
         dataset.datastore.setReference(datastore);
         dataset.listMode.setValue(ListMode.Both);
-        dataset.folder.setValue("root");
+        dataset.folder.setValue(DRIVE_ROOT);
         dataset.includeSubDirectories.setValue(true);
         dataset.includeTrashedFiles.setValue(false);
-        properties = new GoogleDriveInputProperties("test");
+        properties = new GoogleDriveInputProperties(TEST_NAME);
         properties.setupProperties();
         properties.setupLayout();
         properties.setDatasetProperties(dataset);
@@ -73,7 +75,7 @@ public class GoogleDriveDatasetTestIT {
         rt.initialize(null, dataset);
         GoogleDriveUtils utils = rt.createDataSource(properties).getDriveUtils();
         for (int i = 0; i < LIMIT; i++) {
-            createdFolders.add(utils.createFolder("root", "folder" + i));
+            createdFolders.add(utils.createFolder(DRIVE_ROOT, "folder" + i));
         }
     }
 

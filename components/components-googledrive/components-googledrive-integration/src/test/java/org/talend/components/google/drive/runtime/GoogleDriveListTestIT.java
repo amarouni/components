@@ -29,17 +29,17 @@ public class GoogleDriveListTestIT extends GoogleDriveBaseTestIT {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        properties = new GoogleDriveListProperties("test");
+        properties = new GoogleDriveListProperties(TEST_NAME);
         properties.init();
         properties.setupProperties();
         properties.connection = connectionProperties;
         properties.setupLayout();
-        properties.folder.setValue("root");
+        properties.folder.setValue(DRIVE_ROOT);
     }
 
     @Test
     public void testListRoot() throws Exception {
-        createFolderAtRoot("Talend");
+        createFolderAtRoot("Talend" + testTS);
         properties.listMode.setValue(ListMode.Both);
         properties.includeSubDirectories.setValue(true);
         //

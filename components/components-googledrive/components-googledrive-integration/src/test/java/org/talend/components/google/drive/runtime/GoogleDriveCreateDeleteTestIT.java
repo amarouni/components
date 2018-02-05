@@ -39,18 +39,18 @@ public class GoogleDriveCreateDeleteTestIT extends GoogleDriveBaseTestIT {
 
         runtime = new GoogleDriveDeleteRuntime();
 
-        properties = new GoogleDriveDeleteProperties("test");
+        properties = new GoogleDriveDeleteProperties(TEST_NAME);
         properties.setupProperties();
         properties.connection = connectionProperties;
         properties.deleteMode.setValue(AccessMethod.Id);
         properties.useTrash.setValue(false);
 
-        GoogleDriveListProperties listProperties = new GoogleDriveListProperties("test");
+        GoogleDriveListProperties listProperties = new GoogleDriveListProperties(TEST_NAME);
         listProperties.init();
         listProperties.setupProperties();
         listProperties.connection = connectionProperties;
         listProperties.setupLayout();
-        listProperties.folder.setValue("root");
+        listProperties.folder.setValue(DRIVE_ROOT);
         listProperties.listMode.setValue(ListMode.Both);
         listProperties.includeSubDirectories.setValue(true);
         source.initialize(container, listProperties);
@@ -59,7 +59,7 @@ public class GoogleDriveCreateDeleteTestIT extends GoogleDriveBaseTestIT {
 
     @Test
     public void testDeleteAllResources() throws Exception {
-        createFolderAtRoot("Talend-Delete");
+        createFolderAtRoot("Talend-Delete" + testTS); // at least one item
         listReader.start();
         IndexedRecord record = listReader.getCurrent();
         deleteResource(record);

@@ -35,7 +35,7 @@ public class GoogleDrivePutGetTestIT extends GoogleDriveBaseTestIT {
 
     private GoogleDriveGetProperties getProperties;
 
-    private String folder = "Talend-putget";
+    private String folder;
 
     private String file = "testFile.txt";
 
@@ -43,8 +43,8 @@ public class GoogleDrivePutGetTestIT extends GoogleDriveBaseTestIT {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
-        putProperties = new GoogleDrivePutProperties("test");
+        folder = "Talend-putget" + testTS;
+        putProperties = new GoogleDrivePutProperties(TEST_NAME);
         putProperties.setupProperties();
         putProperties.connection = connectionProperties;
         putProperties.overwrite.setValue(true);
@@ -52,7 +52,7 @@ public class GoogleDrivePutGetTestIT extends GoogleDriveBaseTestIT {
         putProperties.destinationFolder.setValue(folder);
         putProperties.fileName.setValue(file);
 
-        getProperties = new GoogleDriveGetProperties("test");
+        getProperties = new GoogleDriveGetProperties(TEST_NAME);
         getProperties.setupProperties();
         getProperties.connection = connectionProperties;
         getProperties.file.setValue("/" + folder + "/" + file);
@@ -64,7 +64,7 @@ public class GoogleDrivePutGetTestIT extends GoogleDriveBaseTestIT {
         // put file
         sink.initialize(container, putProperties);
         WriterWithFeedback writer = (WriterWithFeedback) sink.createWriteOperation().createWriter(container);
-        writer.open("test");
+        writer.open(TEST_NAME);
         IndexedRecord record = new GenericData.Record(SchemaBuilder.builder().record("write").fields() //
                 .name(GoogleDrivePutDefinition.RETURN_CONTENT).type(AvroUtils._bytes()).noDefault() //
                 .endRecord());
