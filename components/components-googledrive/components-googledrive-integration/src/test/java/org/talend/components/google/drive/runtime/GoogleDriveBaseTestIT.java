@@ -47,7 +47,7 @@ public class GoogleDriveBaseTestIT {
 
     public static final String DRIVE_ROOT = "root";
 
-    public static final String TEST_NAME = "GoogleDrive-test";
+    public static final String TEST_NAME = "GoogleDrivesockettimeout-test";
 
     public static String GOOGLEDRIVE_SERVICE_ACCOUNT_FILE;
 
@@ -111,6 +111,7 @@ public class GoogleDriveBaseTestIT {
                     try {
                         base.evaluate();
                     } catch (SocketTimeoutException ex) {
+                        LOG.error("{} caught during test execution.", ex.getMessage());
                         // If called with an expression evaluating to false, the test will halt and be ignored.
                         Assume.assumeTrue(false);
                     }
