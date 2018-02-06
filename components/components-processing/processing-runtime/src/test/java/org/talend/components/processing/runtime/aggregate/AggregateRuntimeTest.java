@@ -20,7 +20,6 @@ import org.apache.beam.sdk.values.PCollection;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.talend.components.processing.definition.aggregate.AggregateFieldOperationType;
@@ -320,19 +319,31 @@ public class AggregateRuntimeTest {
 
             .name("array1_COUNT")
             .type()
+            .unionOf()
             .longType()
+            .and()
+            .nullType()
+            .endUnion()
             .noDefault()
 
             .name("g2_list_value")
             .type()
+            .unionOf()
             .array()
             .items()
             .stringType()
+            .and()
+            .nullType()
+            .endUnion()
             .noDefault()
 
             .name("g1_count_number")
             .type()
+            .unionOf()
             .longType()
+            .and()
+            .nullType()
+            .endUnion()
             .noDefault()
 
             .endRecord();
@@ -418,6 +429,7 @@ public class AggregateRuntimeTest {
     static {
         nullArray.add(null);
     }
+
     private final IndexedRecord basicResult4 = new GenericRecordBuilder(basicResultSchema) //
             .set("g1", "teamC")
             .set("g2", "sub1")
@@ -480,13 +492,11 @@ public class AggregateRuntimeTest {
     }
 
     @Test
-    @Ignore("PAssert issue")
     public void basicTest_Local() {
         basicTest(pipeline);
     }
 
     @Test
-    @Ignore("PAssert issue")
     public void basicTest_Spark() {
         basicTest(createSparkRunnerPipeline());
     }

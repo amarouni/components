@@ -359,9 +359,6 @@ public class AggregateCombineFn
         @Override
         public void mergeAccumulators(Iterable<Long> accsList) {
             Iterator<Long> iterator = accsList.iterator();
-            if (!iterator.hasNext()) {
-                createAccumulator();
-            }
             while (iterator.hasNext()) {
                 accs += iterator.next();
             }
