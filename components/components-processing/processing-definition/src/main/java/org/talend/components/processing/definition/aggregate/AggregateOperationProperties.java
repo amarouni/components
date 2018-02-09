@@ -42,7 +42,7 @@ public class AggregateOperationProperties extends PropertiesImpl {
         super.setupLayout();
         Form mainForm = new Form(this, Form.MAIN);
         mainForm.addRow(Widget.widget(fieldPath).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
-        mainForm.addRow(operation);
+        mainForm.addRow(Widget.widget(operation).setWidgetType(Widget.DATALIST_WIDGET_TYPE));
         mainForm.addRow(outputFieldPath);
     }
 
