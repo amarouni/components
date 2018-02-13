@@ -96,6 +96,7 @@ public class AggregateProperties extends FixedConnectorsComponentProperties {
     public void setupProperties() {
         super.setupProperties();
         groupBy.init();
+        groupBy.setMinItems("0");
         groupBy.createAndAddRow();
         operations.init();
         operations.createAndAddRow();
