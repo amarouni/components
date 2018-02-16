@@ -87,9 +87,9 @@ public class AggregateProperties extends FixedConnectorsComponentProperties {
         Form mainForm = new Form(this, Form.MAIN);
 
         mainForm.addRow(Widget.widget(groupBy).setWidgetType(Widget.UNCOLLAPSIBLE_NESTED_PROPERTIES)
-                .setConfigurationValue(Widget.NESTED_PROPERTIES_TYPE_OPTION, "filter"));
+                .setConfigurationValue(Widget.NESTED_PROPERTIES_TYPE_OPTION, "groupment parameter"));
         mainForm.addRow(Widget.widget(operations).setWidgetType(Widget.COLUMNS_PROPERTIES)
-                .setConfigurationValue(Widget.NESTED_PROPERTIES_TYPE_OPTION, "filter"));
+                .setConfigurationValue(Widget.NESTED_PROPERTIES_TYPE_OPTION, "operation"));
     }
 
     @Override
