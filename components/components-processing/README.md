@@ -63,7 +63,7 @@ Some of the current restrictions on this component are:
 
 Given these considerations, the following conversion table applies:
 
-| ↓dst&nbsp;\&nbsp;src→ | boolean | int | long | float | double | bytes | string |
+| ↓dst&nbsp;\\&nbsp;src→ | boolean | int | long | float | double | bytes | string |
 | -------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | Boolean | `=` | !=0 | !=0 | !=0 | !=0 | !=0 | ==true
 | Integer | 0/1 | `=` | :white_check_mark: | :large_orange_diamond: | :white_check_mark: | 4 bytes java | :hash: |
@@ -103,7 +103,7 @@ Warnings are not implemented, but if we were to take them into account, the foll
 Errors kill the job.
 * Parsing exceptions with bad `DateFormat`/`DecimalFormat` patterns,
 * Any source causes exception from bad `parse` or `valueOf` conversions.
-* Not source bytes to create a dest value.
+* Not enough source bytes to create a dest value.
 
 ### Future work
 * Labels: Field, Convert to, Pattern.
