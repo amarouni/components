@@ -205,9 +205,9 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
     }
 
     /**
-     * Transform Avro {@link IndexedRecord} into a byte array.
+     * Transform Avro key value {@link IndexedRecord} into a byte array.
      *
-     * In case of a dataset that uses a custom avro schema, the @processElement method
+     * In case of a dataset that uses a custom Avro schema, the @processElement method
      * uses the {@link IndexedRecordHelper} to wrap incoming records in
      * {@link KafkaIndexedRecordWrapper} and then writes them using the custom Avro schema.
      * Otherwise, the incoming records are written with their original schema.
@@ -253,7 +253,7 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
     /**
      * Transform Avro {@link IndexedRecord} into a byte array.
      *
-     * In case of a dataset that uses a custom avro schema, the @processElement method
+     * In case of a dataset that uses a custom Avro schema, the @processElement method
      * uses the {@link IndexedRecordHelper} to wrap incoming records in
      * {@link KafkaIndexedRecordWrapper} and then writes them using the custom Avro schema.
      * Otherwise, the incoming records are written with their original schema.
@@ -268,7 +268,6 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
 
         @Setup
         public void setup() {
-            LOG.error(helper.toString());
             helper.setup();
         }
 
@@ -282,7 +281,6 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
                     helper.getDatumWriter().write(helper.getKafkaIndexedRecordWrapper(), encoder);
                 } else {
                     if(helper.getDatumWriter() == null){
-                        LOG.error(c.element().getSchema().toString(true));
                         // set the datumWriter for the first time with the incoming record schema
                         helper.setDatumWriter(new GenericDatumWriter(c.element().getSchema()));
                     }
