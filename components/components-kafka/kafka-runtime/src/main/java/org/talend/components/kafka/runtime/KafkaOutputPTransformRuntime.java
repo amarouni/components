@@ -12,6 +12,11 @@
 // ============================================================================
 package org.talend.components.kafka.runtime;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.Charset;
+
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.IndexedRecord;
@@ -39,11 +44,6 @@ import org.talend.components.kafka.output.KafkaOutputProperties;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.ValidationResult;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.charset.Charset;
-
 public class KafkaOutputPTransformRuntime extends PTransform<PCollection<IndexedRecord>, PDone>
         implements RuntimableRuntime<KafkaOutputProperties> {
 
@@ -57,7 +57,8 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
                 properties.getDatasetProperties().valueFormat.getValue() == KafkaDatasetProperties.ValueFormat.AVRO;
         final String kafkaDatasetStringSchema = properties.getDatasetProperties().avroSchema.getValue();
         final boolean useCustomAvroSchema = properties.getDatasetProperties().isHierarchy.getValue();
-        final IndexedRecordHelper indexedRecordHelper = new IndexedRecordHelper(kafkaDatasetStringSchema, useCustomAvroSchema);
+        final IndexedRecordHelper indexedRecordHelper =
+                new IndexedRecordHelper(kafkaDatasetStringSchema, useCustomAvroSchema);
 
         KafkaIO.Write<byte[], byte[]> kafkaWrite = KafkaIO
                 .<byte[], byte[]> write()
@@ -72,11 +73,11 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
             PCollection pc1 = objectPCollection.apply(WithKeys.of(new ProduceKey(properties.keyColumn.getValue())));
             if (useAvro) {
                 // TODO for now use incoming avro schema directly, do not check configured schema, improvement it.
-                return ((PCollection<KV<byte[], byte[]>>) pc1.apply(ParDo.of(new AvroKVToByteArrayDoFn(indexedRecordHelper))))
-                        .apply(kafkaWrite);
+                return ((PCollection<KV<byte[], byte[]>>) pc1
+                        .apply(ParDo.of(new AvroKVToByteArrayDoFn(indexedRecordHelper)))).apply(kafkaWrite);
             } else { // csv
-                return ((PCollection<KV<byte[], byte[]>>) pc1.apply(
-                        MapElements.via(new FormatCsvKV(properties.getDatasetProperties().getFieldDelimiter()))))
+                return ((PCollection<KV<byte[], byte[]>>) pc1
+                        .apply(MapElements.via(new FormatCsvKV(properties.getDatasetProperties().getFieldDelimiter()))))
                                 .apply(kafkaWrite);
             }
         }
@@ -87,8 +88,7 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
                         kafkaWrite.values());
             } else { // csv
                 return (PDone) objectPCollection
-                        .apply(MapElements
-                                .via(new FormatCsv(properties.getDatasetProperties().getFieldDelimiter())))
+                        .apply(MapElements.via(new FormatCsv(properties.getDatasetProperties().getFieldDelimiter())))
                         .apply(kafkaWrite.values());
             }
         }
@@ -178,13 +178,14 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
     public static class KafkaIndexedRecordWrapper implements IndexedRecord {
 
         IndexedRecord incomingIndexedRecord;
+
         Schema datasetSchema;
 
-        public void setIndexedRecord(IndexedRecord incomingIndexedRecord){
+        public void setIndexedRecord(IndexedRecord incomingIndexedRecord) {
             this.incomingIndexedRecord = incomingIndexedRecord;
         }
 
-        public void setDatasetSchema(Schema datasetSchema){
+        public void setDatasetSchema(Schema datasetSchema) {
             this.datasetSchema = datasetSchema;
         }
 
@@ -216,7 +217,7 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
 
         IndexedRecordHelper helper;
 
-        AvroKVToByteArrayDoFn(IndexedRecordHelper helper){
+        AvroKVToByteArrayDoFn(IndexedRecordHelper helper) {
             this.helper = helper;
         }
 
@@ -230,11 +231,11 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
-                if(helper.isUseCustomAvroSchema()){
+                if (helper.isUseCustomAvroSchema()) {
                     helper.getKafkaIndexedRecordWrapper().setIndexedRecord(c.element().getValue());
                     helper.getDatumWriter().write(helper.getKafkaIndexedRecordWrapper(), encoder);
                 } else {
-                    if(helper.getDatumWriter() == null){
+                    if (helper.getDatumWriter() == null) {
                         // set the datumWriter for the first time with the incoming record schema
                         helper.setDatumWriter(new GenericDatumWriter(c.element().getValue().getSchema()));
                     }
@@ -262,7 +263,7 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
 
         IndexedRecordHelper helper;
 
-        AvroToByteArrayDoFn(IndexedRecordHelper helper){
+        AvroToByteArrayDoFn(IndexedRecordHelper helper) {
             this.helper = helper;
         }
 
@@ -276,11 +277,11 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
             try {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 BinaryEncoder encoder = EncoderFactory.get().binaryEncoder(out, null);
-                if(helper.isUseCustomAvroSchema()){
+                if (helper.isUseCustomAvroSchema()) {
                     helper.getKafkaIndexedRecordWrapper().setIndexedRecord(c.element());
                     helper.getDatumWriter().write(helper.getKafkaIndexedRecordWrapper(), encoder);
                 } else {
-                    if(helper.getDatumWriter() == null){
+                    if (helper.getDatumWriter() == null) {
                         // set the datumWriter for the first time with the incoming record schema
                         helper.setDatumWriter(new GenericDatumWriter(c.element().getSchema()));
                     }
@@ -298,24 +299,28 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
 
     /**
      * {@link IndexedRecord} helper to setup {@link DoFn} classes for working with incoming records
-     * {@link IndexedRecord} to Byte arrays and avoid object instantiation inside @{@link org.apache.beam.sdk.transforms.DoFn.ProcessElement}
+     * {@link IndexedRecord} to Byte arrays and avoid object instantiation
+     * inside @{@link org.apache.beam.sdk.transforms.DoFn.ProcessElement}
      *
      * If @useCustomAvroSchema is set to true, we initialize some helper objects in the @setup().
      */
     public static class IndexedRecordHelper implements Serializable {
 
         private String kafkaDatasetStringSchema;
+
         private boolean useCustomAvroSchema;
+
         private KafkaIndexedRecordWrapper kafkaIndexedRecordWrapper;
+
         private DatumWriter<IndexedRecord> datumWriter;
 
-        IndexedRecordHelper(String kafkaDatasetStringSchema, boolean useCustomAvroSchema){
+        IndexedRecordHelper(String kafkaDatasetStringSchema, boolean useCustomAvroSchema) {
             this.useCustomAvroSchema = useCustomAvroSchema;
             this.kafkaDatasetStringSchema = kafkaDatasetStringSchema;
         }
 
-        public void setup(){
-            if(useCustomAvroSchema){
+        public void setup() {
+            if (useCustomAvroSchema) {
                 kafkaIndexedRecordWrapper = new KafkaIndexedRecordWrapper();
                 org.apache.avro.Schema.Parser parser = new org.apache.avro.Schema.Parser();
                 Schema kafkaDatasetSchema = parser.parse(kafkaDatasetStringSchema);
@@ -342,12 +347,9 @@ public class KafkaOutputPTransformRuntime extends PTransform<PCollection<Indexed
 
         @Override
         public String toString() {
-            return "IndexedRecordHelper{" +
-                    "kafkaDatasetStringSchema='" + kafkaDatasetStringSchema + '\'' +
-                    ", useCustomAvroSchema=" + useCustomAvroSchema +
-                    ", kafkaIndexedRecordWrapper=" + kafkaIndexedRecordWrapper +
-                    ", datumWriter=" + datumWriter +
-                    '}';
+            return "IndexedRecordHelper{" + "kafkaDatasetStringSchema='" + kafkaDatasetStringSchema + '\''
+                    + ", useCustomAvroSchema=" + useCustomAvroSchema + ", kafkaIndexedRecordWrapper="
+                    + kafkaIndexedRecordWrapper + ", datumWriter=" + datumWriter + '}';
         }
     }
 }
